@@ -31,4 +31,11 @@ export class PostsService {
     const allPosts = await this.postsModel.find().sort({ createdAt: -1 });
     return allPosts;
   }
+
+  async getMyPosts(id: string) {
+    const myPosts = await this.postsModel
+      .find({ author: id })
+      .sort({ createdAt: -1 });
+    return myPosts;
+  }
 }

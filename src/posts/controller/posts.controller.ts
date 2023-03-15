@@ -49,4 +49,9 @@ export class PostsController {
   getPosts() {
     return this.postsService.getAllPosts();
   }
+
+  @Get(':id')
+  async getMyposts(@Param('id') id: string) {
+    return await this.postsService.getMyPosts(id);
+  }
 }
