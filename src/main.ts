@@ -40,6 +40,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: { defaultModelsExpandDepth: -1 },
   });
+  app.enableCors({ origin: true, credentials: true });
   const PORT = process.env.PORT;
   await app.listen(PORT);
 }
