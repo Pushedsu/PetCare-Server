@@ -40,16 +40,84 @@ export class PostsController {
     await this.postsService.posting(body);
   }
 
+  @ApiOperation({ summary: '좋아요 +1 API' })
+  @ApiResponse({
+    status: 500,
+    description: 'Server error...',
+  })
+  @ApiResponse({
+    status: 200,
+    description: '성공 여부',
+    schema: {
+      example: {
+        success: true,
+      },
+    },
+  })
   @Put(':id')
   async plusLike(@Param('id') id: string) {
     await this.postsService.plusLike(id);
   }
 
+  @ApiOperation({ summary: '모든 게시글 Load API' })
+  @ApiResponse({
+    status: 500,
+    description: 'Server error...',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'data: { 유저 정보 } ',
+    schema: {
+      example: {
+        success: true,
+        data: [
+          {
+            _id: '641...',
+            author: '63d885e...',
+            contents: '이 편지는 영국에서 시...',
+            name: '홍길동',
+            title: '제목',
+            likeCount: 0,
+            createdAt: '2023-00-00T10:55:50.563Z',
+            updatedAt: '2023-00-00T10:55:50.563Z',
+            __v: 0,
+          },
+        ],
+      },
+    },
+  })
   @Get('all')
   getPosts() {
     return this.postsService.getAllPosts();
   }
 
+  @ApiOperation({ summary: '내글 보기 API' })
+  @ApiResponse({
+    status: 500,
+    description: 'Server error...',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'data: { 유저 정보 } ',
+    schema: {
+      example: {
+        success: true,
+        data: [
+          {
+            _id: '641...',
+            author: '63d885e...',
+            contents: '이 편지는 영국에서 시...',
+            name: '홍길동',
+            title: '제목',
+            likeCount: 0,
+            createdAt: '2023-00-00T10:55:50.563Z',
+            updatedAt: '2023-00-00T10:55:50.563Z',
+            __v: 0,
+          },
+        ],
+      },
+    },
+  })
   @Get(':id')
   async getMyposts(@Param('id') id: string) {
     return await this.postsService.getMyPosts(id);

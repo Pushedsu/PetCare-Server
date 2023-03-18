@@ -50,7 +50,7 @@ export class UserController {
   })
   @ApiResponse({
     status: 200,
-    description: 'data: { 유저 정보 } ',
+    description: 'success: true, data: { 유저 정보 } ',
     type: UserResDto,
   })
   @Get('userInfo')
@@ -67,7 +67,7 @@ export class UserController {
   })
   @ApiResponse({
     status: 200,
-    description: 'success: true',
+    description: 'success: true\ndata:{ 유저정보 }',
     type: UserResDto,
   })
   @Post('deleteUser')
@@ -102,7 +102,7 @@ export class UserController {
   })
   @ApiResponse({
     status: 201,
-    description: 'data: { 액세스 토큰, 리프레쉬 토큰 }',
+    description: 'success: true, data: { 액세스 토큰, 리프레쉬 토큰 }',
     type: LoginResDto,
   })
   @Post('login')
@@ -127,7 +127,7 @@ export class UserController {
   @ApiResponse({ status: 500, description: 'server error...' })
   @ApiResponse({
     status: 200,
-    description: 'data: { 액세스 토큰 }',
+    description: 'success: true, data: { 액세스 토큰 }',
     schema: {
       example: {
         access_token: 'wer23w31r2...',
@@ -145,7 +145,7 @@ export class UserController {
   @ApiOperation({ summary: '모든 유저 데이터 가져오기' })
   @ApiResponse({
     status: 200,
-    description: 'data: { 유저 정보 } ',
+    description: 'success: true, data: { 유저 정보 } ',
     schema: {
       example: {
         email: '~~',
