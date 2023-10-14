@@ -4,6 +4,8 @@ import * as bcrypt from 'bcrypt';
 import { UserRepository } from '../user.repository';
 import { Types } from 'mongoose';
 import { UserDeleteReqDto } from '../dto/user.delete.req.dto';
+import { UserReqUpdateNameDto } from '../dto/user.req.updateName.dto';
+import { UserReqUpdatePasswordDto } from '../dto/user.req.updatepw.dto';
 
 @Injectable()
 export class UserService {
@@ -13,6 +15,33 @@ export class UserService {
     const userAllData = await this.userRepository.findAll();
     const newReadOnlyData = userAllData.map((user) => user.readOnlyData);
     return newReadOnlyData;
+  }
+
+  async updateName(body: UserReqUpdateNameDto) {
+    const { id, name } = body;
+    const updateName = await this.userRepository.updateName(id, name);
+    return updateName;
+  }
+
+  async updatePassword(body: UserReqUpdatePasswordDto) {
+    const { id, password, currentPassword } = body;
+
+    const user = await this.userRepository.findUserById(id);
+
+    if (!user) {
+      throw new UnauthorizedException('이메일이 존재하지 않습니다');
+    }
+
+    const checkPassword: boolean = await bcrypt.compare(
+      currentPassword,
+      user.password,
+    );
+
+    if (!checkPassword) {
+      throw new UnauthorizedException('비밀번호가 일치하지 않습니다');
+    }
+
+    return await this.userRepository.updatePassword(id, password);
   }
 
   async logout(id: Types.ObjectId) {
