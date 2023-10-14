@@ -31,6 +31,8 @@ import {
 import { UserResDto } from '../dto/user.res.dto';
 import { LoginResDto } from '../dto/user.req.login.dto';
 import { UserDeleteReqDto } from '../dto/user.delete.req.dto';
+import { UserReqUpdateNameDto } from '../dto/user.req.updateName.dto';
+import { UserReqUpdatePasswordDto } from '../dto/user.req.updatepw.dto';
 
 @Controller('user')
 @ApiTags('User')
@@ -168,5 +170,22 @@ export class UserController {
   @Get('all')
   getAllUser() {
     return this.userService.getUserAllData();
+  }
+
+  @ApiOperation({ summary: '이름 변경 API' })
+  @ApiResponse({
+    status: 200,
+    description: 'success: true',
+  })
+  @Post('updateName')
+  async updateByName(@Body() body: UserReqUpdateNameDto) {
+    return this.userService.updateName(body);
+  }
+
+  @ApiOperation({ summary: '비밀번호 변경 API' })
+  @ApiResponse({})
+  @Post('updatePassword')
+  async updatePassword(@Body() body: UserReqUpdatePasswordDto) {
+    return this.userService.updatePassword(body);
   }
 }
