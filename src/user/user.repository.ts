@@ -3,6 +3,7 @@ import { Model, Types } from 'mongoose';
 import { Posts } from 'src/posts/posts.schema';
 import { UserCreateDto } from './dto/user.create.dto';
 import { User } from './user.schema';
+import * as bcrypt from 'bcrypt';
 
 export class UserRepository {
   constructor(
@@ -54,6 +55,21 @@ export class UserRepository {
     return await this.userModel.updateOne(
       { _id: id },
       { $set: { refreshToken: token } },
+    );
+  }
+
+  async updateName(id: Types.ObjectId, rename: string) {
+    return await this.userModel.updateOne(
+      { _id: id },
+      { $set: { name: rename } },
+    );
+  }
+
+  async updatePassword(id: Types.ObjectId, password: string) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    return await this.userModel.updateOne(
+      { _id: id },
+      { $set: { password: hashedPassword } },
     );
   }
 
