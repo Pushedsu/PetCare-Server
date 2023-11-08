@@ -174,8 +174,13 @@ export class UserController {
 
   @ApiOperation({ summary: '이름 변경 API' })
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: 'success: true',
+    type: UserReqUpdateNameDto,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'server error...',
   })
   @Post('updateName')
   async updateByName(@Body() body: UserReqUpdateNameDto) {
@@ -183,7 +188,15 @@ export class UserController {
   }
 
   @ApiOperation({ summary: '비밀번호 변경 API' })
-  @ApiResponse({})
+  @ApiResponse({
+    status: 201,
+    description: 'success: true',
+    type: UserReqUpdatePasswordDto,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'server error...',
+  })
   @Post('updatePassword')
   async updatePassword(@Body() body: UserReqUpdatePasswordDto) {
     return this.userService.updatePassword(body);
