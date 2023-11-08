@@ -38,4 +38,23 @@ export class PostsService {
       .sort({ createdAt: -1 });
     return myPosts;
   }
+
+  async searchContents(text: string) {
+    const searchContents = await this.postsModel
+      .find({
+        contents: { $regex: `${text}`, $options: 'i' },
+      })
+      .sort({ createdAt: -1 });
+    return searchContents;
+  }
+
+  async searchTitle(text: string) {
+    const searchTitlePost = await this.postsModel
+      .find({
+        title: { $regex: `${text}`, $options: 'i' },
+      })
+      .sort({ createdAt: -1 });
+    console.log(searchTitlePost);
+    return searchTitlePost;
+  }
 }

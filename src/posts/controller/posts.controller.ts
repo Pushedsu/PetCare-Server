@@ -122,4 +122,70 @@ export class PostsController {
   async getMyposts(@Param('id') id: string) {
     return await this.postsService.getMyPosts(id);
   }
+
+  @ApiOperation({ summary: '본문 검색 API' })
+  @ApiResponse({
+    status: 500,
+    description: 'Server error...',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'data: { 유저 정보 } ',
+    schema: {
+      example: {
+        success: true,
+        data: [
+          {
+            _id: '641...',
+            author: '63d885e...',
+            contents: '이 편지는 영국에서 시...',
+            name: '홍길동',
+            title: '제목',
+            likeCount: 0,
+            createdAt: '2023-00-00T10:55:50.563Z',
+            updatedAt: '2023-00-00T10:55:50.563Z',
+            __v: 0,
+          },
+        ],
+      },
+    },
+  })
+  @Post('searchContents')
+  async contentsSearch(@Body() body) {
+    const { text } = body;
+    return await this.postsService.searchContents(text);
+  }
+
+  @ApiOperation({ summary: '제목 검색 API' })
+  @ApiResponse({
+    status: 500,
+    description: 'Server error...',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'data: { 유저 정보 } ',
+    schema: {
+      example: {
+        success: true,
+        data: [
+          {
+            _id: '641...',
+            author: '63d885e...',
+            contents: '이 편지는 영국에서 시...',
+            name: '홍길동',
+            title: '제목',
+            likeCount: 0,
+            createdAt: '2023-00-00T10:55:50.563Z',
+            updatedAt: '2023-00-00T10:55:50.563Z',
+            __v: 0,
+          },
+        ],
+      },
+    },
+  })
+  @Post('searchTitle')
+  async titleSearch(@Body() body) {
+    const { text } = body;
+    return await this.postsService.searchTitle(text);
+  }
 }
