@@ -7,10 +7,17 @@ import { UserService } from './service/user.service';
 import { UserRepository } from './user.repository';
 import { AuthModule } from 'src/auth/auth.module';
 import { Posts, PostsSchema } from 'src/posts/posts.schema';
+import { AwsService } from 'src/aws/aws.service';
+import { MulterModule } from '@nestjs/platform-express/multer';
+import { memoryStorage } from 'multer';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    MulterModule.register({
+      dest: './upload',
+      storage: memoryStorage(),
+    }),
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: Posts.name, schema: PostsSchema },
@@ -18,7 +25,7 @@ import { Posts, PostsSchema } from 'src/posts/posts.schema';
     forwardRef(() => AuthModule),
   ],
   controllers: [UserController],
-  providers: [UserService, UserRepository],
+  providers: [UserService, UserRepository, AwsService],
   exports: [UserService, UserRepository],
 })
 export class UserModule {}
