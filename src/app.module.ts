@@ -7,18 +7,20 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { PostModule } from './posts/posts.module';
+import { AwsModule } from './aws/aws.module';
 import mongoose from 'mongoose';
 
 @Module({
   imports: [
     UserModule,
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(process.env.DB_URI, {
       useUnifiedTopology: true,
       useNewUrlParser: true,
     }),
     AuthModule,
     PostModule,
+    AwsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

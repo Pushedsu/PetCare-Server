@@ -6,4 +6,5 @@ export class UserCreateDto extends PickType(User, [
   'name',
   'password',
   'refreshToken',
+  'image',
 ] as const) {}

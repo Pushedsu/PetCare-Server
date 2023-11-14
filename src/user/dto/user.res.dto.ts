@@ -3,7 +3,11 @@ import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { User } from '../user.schema';
 
-export class UserResDto extends PickType(User, ['email', 'name'] as const) {
+export class UserResDto extends PickType(User, [
+  'email',
+  'name',
+  'image',
+] as const) {
   @ApiProperty({
     example: '32d804we9t9...',
     description: 'id',

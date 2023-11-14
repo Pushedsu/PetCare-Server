@@ -75,6 +75,8 @@ export class UserService {
 
     const refreshToken = null;
 
+    const image = '';
+
     const isEmailExists = await this.userRepository.ExistsByEmail(email);
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -88,8 +90,13 @@ export class UserService {
       name,
       password: hashedPassword,
       refreshToken,
+      image,
     });
 
     return user.readOnlyData;
+  }
+
+  async updateImgUrl(id: Types.ObjectId, url: string) {
+    return await this.userRepository.updateImgUrl(id, url);
   }
 }

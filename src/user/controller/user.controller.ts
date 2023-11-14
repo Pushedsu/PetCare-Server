@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Req,
+  UploadedFile,
   UseFilters,
   UseGuards,
   UseInterceptors,
@@ -33,6 +34,8 @@ import { LoginResDto } from '../dto/user.req.login.dto';
 import { UserDeleteReqDto } from '../dto/user.delete.req.dto';
 import { UserReqUpdateNameDto } from '../dto/user.req.updateName.dto';
 import { UserReqUpdatePasswordDto } from '../dto/user.req.updatepw.dto';
+import { FileInterceptor } from '@nestjs/platform-express/multer';
+import { AwsService } from 'src/aws/aws.service';
 
 @Controller('user')
 @ApiTags('User')
@@ -42,6 +45,7 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly authService: AuthService,
+    private readonly awsService: AwsService,
   ) {}
 
   @ApiOperation({ summary: '현재 로그인된 유저 정보 가져오기 API' })
@@ -200,5 +204,51 @@ export class UserController {
   @Post('updatePassword')
   async updatePassword(@Body() body: UserReqUpdatePasswordDto) {
     return this.userService.updatePassword(body);
+  }
+
+  @ApiOperation({ summary: '유저 프로필 이미지 업로드' })
+  @ApiResponse({
+    status: 500,
+    description: 'Server error...',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'success: true',
+    schema: {
+      example: {
+        success: true,
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('image'))
+  @Post('uploadImg')
+  async uploadImg(
+    @Body('id') id: Types.ObjectId,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const { key } = await this.awsService.uploadFileToS3('profileImg', file);
+    const url = this.awsService.getAwsS3FileUrl(key);
+    await this.userService.updateImgUrl(id, url);
+    const data = { image: url };
+    return data;
+  }
+
+  @ApiOperation({ summary: '유저 프로필 이미지 삭제' })
+  @ApiResponse({
+    status: 500,
+    description: 'Server error...',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'success: true',
+    schema: {
+      example: {
+        success: true,
+      },
+    },
+  })
+  @Post('deleteImg')
+  async deleteImg(@Body('key') key: string) {
+    await this.awsService.deleteS3Object(key);
   }
 }

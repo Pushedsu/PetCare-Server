@@ -41,10 +41,15 @@ export class User extends Document {
   @IsString()
   refreshToken: string;
 
+  @Prop()
+  @IsString()
+  image: string;
+
   readonly readOnlyData: {
     email: string;
     name: string;
     id: string;
+    image: string;
     posts: Posts[];
   };
 
@@ -58,6 +63,7 @@ _UserSchema.virtual('readOnlyData').get(function (this: User) {
     email: this.email,
     name: this.name,
     id: this.id,
+    image: this.image,
     posts: this.posts,
   };
 });

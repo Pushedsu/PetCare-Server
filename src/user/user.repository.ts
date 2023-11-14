@@ -81,4 +81,11 @@ export class UserRepository {
       .select('-password -refreshToken');
     return user;
   }
+
+  async updateImgUrl(id: Types.ObjectId, img: string) {
+    return await this.userModel.updateOne(
+      { _id: id },
+      { $set: { image: img } },
+    );
+  }
 }
