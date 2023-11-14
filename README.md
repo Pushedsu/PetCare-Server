@@ -32,10 +32,11 @@
 ```mermaid
 graph TD;
     APP-->Auth;
-    APP-->User;
-    APP-->Post;
     Auth-->User;
     User-->Auth;
+    APP-->User;
+    APP-->Post;
+    APP-->Aws;
 ```
 
 # 🧱 시스템 구조도
