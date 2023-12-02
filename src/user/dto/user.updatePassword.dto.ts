@@ -4,7 +4,7 @@ import { Prop } from '@nestjs/mongoose';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { Types } from 'mongoose';
 
-export class UserReqUpdatePasswordDto extends PickType(User, [
+export class UserUpdatePasswordDto extends PickType(User, [
   'password',
 ] as const) {
   @ApiProperty({

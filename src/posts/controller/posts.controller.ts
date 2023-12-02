@@ -11,7 +11,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exceptions.filter';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
-import { PostsReqDto } from '../dto/posts.req.dto';
+import { PostsCreateDto } from '../dto/posts.create.dto';
 import { PostsService } from '../service/posts.service';
 
 @Controller('posts')
@@ -36,7 +36,7 @@ export class PostsController {
     },
   })
   @Post('posting')
-  async creatPost(@Body() body: PostsReqDto) {
+  async creatPost(@Body() body: PostsCreateDto) {
     await this.postsService.posting(body);
   }
 

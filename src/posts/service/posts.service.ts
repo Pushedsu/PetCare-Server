@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { PostsReqDto } from '../dto/posts.req.dto';
+import { PostsCreateDto } from '../dto/posts.create.dto';
 import { Posts } from '../posts.schema';
 
 @Injectable()
@@ -10,7 +10,7 @@ export class PostsService {
     @InjectModel(Posts.name) private readonly postsModel: Model<Posts>,
   ) {}
 
-  async posting(body: PostsReqDto) {
+  async posting(body: PostsCreateDto) {
     const { author, contents, title, name } = body;
     const newPost = new this.postsModel({
       author,

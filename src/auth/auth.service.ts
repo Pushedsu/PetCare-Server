@@ -2,8 +2,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from 'src/user/user.repository';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { LoginReqDto } from './dto/login.req.dto';
 import { Types } from 'mongoose';
+import { AuthLoginDto } from './dto/auth.login.dto';
 
 @Injectable()
 export class AuthService {
@@ -33,7 +33,7 @@ export class AuthService {
     };
   }
 
-  async login(data: LoginReqDto) {
+  async login(data: AuthLoginDto) {
     const { email, password } = data;
 
     const user = await this.userRepository.findUserByEmail(email);
