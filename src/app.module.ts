@@ -1,13 +1,12 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { PostModule } from './posts/posts.module';
 import { AwsModule } from './aws/aws.module';
+import { EmailModule } from './email/email.module';
 import mongoose from 'mongoose';
 
 @Module({
@@ -21,9 +20,8 @@ import mongoose from 'mongoose';
     AuthModule,
     PostModule,
     AwsModule,
+    EmailModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule implements NestModule {
   private readonly isDev: boolean = process.env.MODE === 'dev' ? true : false;
