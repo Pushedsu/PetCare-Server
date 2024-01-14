@@ -10,6 +10,7 @@ import { Posts, PostsSchema } from 'src/posts/posts.schema';
 import { AwsService } from 'src/aws/aws.service';
 import { MulterModule } from '@nestjs/platform-express/multer';
 import { memoryStorage } from 'multer';
+import { EmailService } from 'src/email/email.service';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { memoryStorage } from 'multer';
     forwardRef(() => AuthModule),
   ],
   controllers: [UserController],
-  providers: [UserService, UserRepository, AwsService],
+  providers: [UserService, UserRepository, AwsService, EmailService],
   exports: [UserService, UserRepository],
 })
 export class UserModule {}
