@@ -7,7 +7,6 @@
 ### 에디터
 
 - Visual Studio Code
-- Mysql Workbench
 - MongoDB Compass
 
 # 🔨 Tech Skills

@@ -12,12 +12,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthService } from 'src/auth/auth.service';
-import { LoginReqDto } from 'src/auth/dto/login.req.dto';
 import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
 import { JwtRefreshAuthGuard } from 'src/auth/jwt/jwtRefresh-auth.guard';
 import { HttpExceptionFilter } from 'src/common/exceptions/http-exceptions.filter';
 import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
-import { UserReqDto } from '../dto/user.request.dto';
+import { UserSignupDto } from '../dto/user.signup.dto';
 import { UserService } from '../service/user.service';
 import { Request } from 'express';
 import { Types } from 'mongoose';
@@ -29,13 +28,15 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserResDto } from '../dto/user.res.dto';
-import { LoginResDto } from '../dto/user.req.login.dto';
-import { UserDeleteReqDto } from '../dto/user.delete.req.dto';
-import { UserReqUpdateNameDto } from '../dto/user.req.updateName.dto';
-import { UserReqUpdatePasswordDto } from '../dto/user.req.updatepw.dto';
+import { UserResponseUserInfo } from '../dto/user.responseUserInfo.dto';
+import { UserLoginResponseTokenDto } from '../dto/user.loginResponseToken.dto';
+import { UserAccountDeleteDto } from '../dto/user.accountDelete.dto';
+import { UserUpdateNameDto } from '../dto/user.updateName.dto';
+import { UserUpdatePasswordDto } from '../dto/user.updatePassword.dto';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { AwsService } from 'src/aws/aws.service';
+import { UserFindPasswordDto } from '../dto/user.findPassword.dto';
+import { AuthLoginDto } from 'src/auth/dto/auth.login.dto';
 
 @Controller('user')
 @ApiTags('User')
@@ -57,7 +58,7 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'success: true, data: { 유저 정보 } ',
-    type: UserResDto,
+    type: UserResponseUserInfo,
   })
   @Get('userInfo')
   @UseGuards(JwtAuthGuard)
@@ -74,11 +75,14 @@ export class UserController {
   @ApiResponse({
     status: 200,
     description: 'success: true\ndata:{ 유저정보 }',
-    type: UserResDto,
+    type: UserResponseUserInfo,
   })
   @Post('deleteUser')
   @UseGuards(JwtAuthGuard)
-  async deleteUser(@CurrentUser() user: User, @Body() body: UserDeleteReqDto) {
+  async deleteUser(
+    @CurrentUser() user: User,
+    @Body() body: UserAccountDeleteDto,
+  ) {
     await this.userService.deleteUser(user.id, body);
   }
 
@@ -97,7 +101,7 @@ export class UserController {
     },
   })
   @Post('signUp')
-  async signUp(@Body() body: UserReqDto) {
+  async signUp(@Body() body: UserSignupDto) {
     await this.userService.signUp(body);
   }
 
@@ -109,10 +113,10 @@ export class UserController {
   @ApiResponse({
     status: 201,
     description: 'success: true, data: { 액세스 토큰, 리프레쉬 토큰 }',
-    type: LoginResDto,
+    type: UserLoginResponseTokenDto,
   })
   @Post('login')
-  async login(@Body() data: LoginReqDto) {
+  async login(@Body() data: AuthLoginDto) {
     return await this.authService.login(data);
   }
 
@@ -180,14 +184,14 @@ export class UserController {
   @ApiResponse({
     status: 201,
     description: 'success: true',
-    type: UserReqUpdateNameDto,
+    type: UserUpdateNameDto,
   })
   @ApiResponse({
     status: 500,
     description: 'server error...',
   })
   @Post('updateName')
-  async updateByName(@Body() body: UserReqUpdateNameDto) {
+  async updateByName(@Body() body: UserUpdateNameDto) {
     return this.userService.updateName(body);
   }
 
@@ -195,14 +199,14 @@ export class UserController {
   @ApiResponse({
     status: 201,
     description: 'success: true',
-    type: UserReqUpdatePasswordDto,
+    type: UserUpdatePasswordDto,
   })
   @ApiResponse({
     status: 500,
     description: 'server error...',
   })
   @Post('updatePassword')
-  async updatePassword(@Body() body: UserReqUpdatePasswordDto) {
+  async updatePassword(@Body() body: UserUpdatePasswordDto) {
     return this.userService.updatePassword(body);
   }
 
@@ -250,5 +254,20 @@ export class UserController {
   @Post('deleteImg')
   async deleteImg(@Body('key') key: string) {
     await this.awsService.deleteS3Object(key);
+  }
+
+  @ApiOperation({ summary: '비밀번호 찾기 API' })
+  @ApiResponse({
+    status: 201,
+    description: 'success: true',
+    type: UserFindPasswordDto,
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'server error...',
+  })
+  @Post('findPassword')
+  async findPassword(@Body() body: UserFindPasswordDto) {
+    return await this.userService.findPassword(body);
   }
 }
