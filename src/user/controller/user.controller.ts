@@ -11,17 +11,17 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthService } from 'src/auth/auth.service';
-import { JwtAuthGuard } from 'src/auth/jwt/jwt-auth.guard';
-import { JwtRefreshAuthGuard } from 'src/auth/jwt/jwtRefresh-auth.guard';
-import { HttpExceptionFilter } from 'src/common/exceptions/http-exceptions.filter';
-import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
+import { AuthService } from '../../auth/auth.service';
+import { JwtAuthGuard } from '../../auth/jwt/jwt-auth.guard';
+import { JwtRefreshAuthGuard } from '../../auth/jwt/jwtRefresh-auth.guard';
+import { HttpExceptionFilter } from '../../common/exceptions/http-exceptions.filter';
+import { SuccessInterceptor } from '../../common/interceptors/success.interceptor';
 import { UserSignupDto } from '../dto/user.signup.dto';
 import { UserService } from '../service/user.service';
 import { Request } from 'express';
 import { Types } from 'mongoose';
 import { User } from '../user.schema';
-import { CurrentUser } from 'src/common/decorator/custom.decorator';
+import { CurrentUser } from '../../common/decorator/custom.decorator';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -34,9 +34,9 @@ import { UserAccountDeleteDto } from '../dto/user.accountDelete.dto';
 import { UserUpdateNameDto } from '../dto/user.updateName.dto';
 import { UserUpdatePasswordDto } from '../dto/user.updatePassword.dto';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
-import { AwsService } from 'src/aws/aws.service';
+import { AwsService } from '../../aws/aws.service';
 import { UserFindPasswordDto } from '../dto/user.findPassword.dto';
-import { AuthLoginDto } from 'src/auth/dto/auth.login.dto';
+import { AuthLoginDto } from '../../auth/dto/auth.login.dto';
 
 @Controller('user')
 @ApiTags('User')

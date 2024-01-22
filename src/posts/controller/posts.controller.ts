@@ -9,8 +9,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { HttpExceptionFilter } from 'src/common/exceptions/http-exceptions.filter';
-import { SuccessInterceptor } from 'src/common/interceptors/success.interceptor';
+import { HttpExceptionFilter } from '../../common/exceptions/http-exceptions.filter';
+import { SuccessInterceptor } from '../../common/interceptors/success.interceptor';
 import { PostsCreateDto } from '../dto/posts.create.dto';
 import { PostsService } from '../service/posts.service';
 

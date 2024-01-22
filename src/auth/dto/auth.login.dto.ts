@@ -1,5 +1,5 @@
 import { PickType } from '@nestjs/swagger';
-import { User } from 'src/user/user.schema';
+import { User } from '../../user/user.schema';
 
 export class AuthLoginDto extends PickType(User, [
   'email',

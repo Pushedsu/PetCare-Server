@@ -6,7 +6,7 @@ import { Types } from 'mongoose';
 import { UserAccountDeleteDto } from '../dto/user.accountDelete.dto';
 import { UserUpdateNameDto } from '../dto/user.updateName.dto';
 import { UserUpdatePasswordDto } from '../dto/user.updatePassword.dto';
-import { EmailService } from 'src/email/email.service';
+import { EmailService } from '../../email/email.service';
 import { UserFindPasswordDto } from '../dto/user.findPassword.dto';
 
 @Injectable()
