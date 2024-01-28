@@ -26,14 +26,6 @@ describe('UserController', () => {
     service = module.get<UserService>(UserService);
   });
 
-  describe('userInfo', () => {
-    it('현재 로그인된 유저 정보 가져오기 만약 클라이언트가 토큰을 주지 않을 경우의 테스트 코드를 작성!', async () => {
-      //given
-      //when
-      //then
-    });
-  });
-
   describe('accountDelete', () => {
     it('회원 탈퇴', async () => {
       //given
