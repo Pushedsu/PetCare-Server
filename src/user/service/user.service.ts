@@ -105,7 +105,7 @@ export class UserService {
     return await this.userRepository.updateImgUrl(id, url);
   }
 
-  async findPassword(body: UserFindPasswordDto) {
+  async findPasswordById(body: UserFindPasswordDto) {
     const { email, id } = body;
     const user = await this.userRepository.findUserById(id);
 

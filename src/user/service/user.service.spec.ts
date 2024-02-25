@@ -2,8 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { UserRepository } from '../user.repository';
 import { EmailService } from 'src/email/email.service';
-import { getModelToken } from '@nestjs/mongoose';
-import { User } from '../user.schema';
 
 const mockRepository = () => {
   findAll: jest.fn();
@@ -16,7 +14,7 @@ const mockEmailService = {
 describe('UserService', () => {
   //let service: UserService;
   let emailService: EmailService;
-  let repository: UserRepository;
+  let userRepository: UserRepository;
   let userService: UserService;
 
   beforeEach(async () => {
@@ -30,13 +28,15 @@ describe('UserService', () => {
 
     userService = module.get<UserService>(UserService);
     emailService = module.get<EmailService>(EmailService);
-    repository = module.get<UserRepository>(UserRepository);
+    userRepository = module.get<UserRepository>(UserRepository);
   });
 
-  describe('findAll', () => {
-    it('모든 값을 불러와!', async () => {
+  describe('getUserAllData', () => {
+    it('회원의 모든 정보를 ', async () => {
       //given
+      const returnValue = {};
       //when
+      //jest.spyOn(userRepository, 'findAll').mockResolvedValue(returnValue);
       //then
     });
   });

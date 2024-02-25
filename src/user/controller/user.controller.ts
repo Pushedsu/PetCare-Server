@@ -267,7 +267,7 @@ export class UserController {
     description: 'server error...',
   })
   @Post('findPassword')
-  async findPassword(@Body() body: UserFindPasswordDto) {
-    return await this.userService.findPassword(body);
+  async findPasswordById(@Body() body: UserFindPasswordDto) {
+    return await this.userService.findPasswordById(body);
   }
 }
