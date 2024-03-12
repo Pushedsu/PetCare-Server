@@ -152,34 +152,6 @@ export class UserController {
     return await this.authService.validateByRefreshToken(id, token);
   }
 
-  @ApiOperation({ summary: '모든 유저 데이터 가져오기' })
-  @ApiResponse({
-    status: 200,
-    description: 'success: true, data: { 유저 정보 } ',
-    schema: {
-      example: {
-        email: '~~',
-        name: '~~',
-        id: '63d885e...',
-        posts: [
-          {
-            _id: '~~',
-            author: '63d885e...',
-            contents: 'hello world',
-            createdAt: '~~',
-            updatedAt: '~~',
-            __v: 0,
-          },
-        ],
-      },
-    },
-  })
-  @ApiResponse({ status: 500, description: 'server error...' })
-  @Get('all')
-  getAllUser() {
-    return this.userService.getUserAllData();
-  }
-
   @ApiOperation({ summary: '이름 변경 API' })
   @ApiResponse({
     status: 201,

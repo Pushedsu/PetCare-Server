@@ -16,12 +16,6 @@ export class UserService {
     private readonly emailService: EmailService,
   ) {}
 
-  async getUserAllData() {
-    const userAllData = await this.userRepository.findAll();
-    const newReadOnlyData = userAllData.map((user) => user.readOnlyData);
-    return newReadOnlyData;
-  }
-
   async updateName(body: UserUpdateNameDto) {
     const { id, name } = body;
     const updateName = await this.userRepository.updateName(id, name);

@@ -46,6 +46,7 @@ export class User extends Document {
   image: string;
 
   readonly readOnlyData: {
+    readOnlyData(readOnlyData: any): unknown;
     email: string;
     name: string;
     id: string;
