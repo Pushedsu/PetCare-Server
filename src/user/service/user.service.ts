@@ -8,6 +8,7 @@ import { UserUpdateNameDto } from '../dto/user.updateName.dto';
 import { UserUpdatePasswordDto } from '../dto/user.updatePassword.dto';
 import { EmailService } from '../../email/email.service';
 import { UserFindPasswordDto } from '../dto/user.findPassword.dto';
+import * as dotenv from 'dotenv';
 
 @Injectable()
 export class UserService {
@@ -115,8 +116,9 @@ export class UserService {
 
     //nodeEmailer나 aws email기능을 통해 입력받은 이메일에 임시 비밀번호를 전송하는 로직 구성
 
-    const charset = process.env.CHARSET;
-
+    const charset =
+      process.env.CHARSET ||
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let tempPassword = '';
 
     for (let i = 0; i < 12; i++) {
