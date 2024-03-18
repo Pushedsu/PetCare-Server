@@ -1,60 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 import { PostsCreateDto } from '../dto/posts.create.dto';
-import { Posts } from '../posts.schema';
+import { PostsRepository } from '../posts.repository';
 
 @Injectable()
 export class PostsService {
-  constructor(
-    @InjectModel(Posts.name) private readonly postsModel: Model<Posts>,
-  ) {}
+  constructor(private readonly postsRepository: PostsRepository) {}
 
   async posting(body: PostsCreateDto) {
     const { author, contents, title, name } = body;
-    const newPost = new this.postsModel({
-      author,
-      contents,
-      title,
-      name,
-    });
-    return await newPost.save();
+    return await this.postsRepository.posting(author, contents, title, name);
   }
 
   async plusLike(id: string) {
-    const post = await this.postsModel.findById(id);
-    post.likeCount += 1;
-    return await post.save();
+    return await this.postsRepository.plusLike(id);
   }
 
   async getAllPosts() {
-    const allPosts = await this.postsModel.find().sort({ createdAt: -1 });
-    return allPosts;
+    return await this.postsRepository.getAllPosts();
   }
 
   async getMyPosts(id: string) {
-    const myPosts = await this.postsModel
-      .find({ author: id })
-      .sort({ createdAt: -1 });
-    return myPosts;
+    return await this.postsRepository.getMyPosts(id);
   }
 
   async searchContents(text: string) {
-    const searchContents = await this.postsModel
-      .find({
-        contents: { $regex: `${text}`, $options: 'i' },
-      })
-      .sort({ createdAt: -1 });
-    return searchContents;
+    return await this.postsRepository.searchContents(text);
   }
 
   async searchTitle(text: string) {
-    const searchTitlePost = await this.postsModel
-      .find({
-        title: { $regex: `${text}`, $options: 'i' },
-      })
-      .sort({ createdAt: -1 });
-    console.log(searchTitlePost);
-    return searchTitlePost;
+    return await this.postsRepository.searchTitle(text);
   }
 }

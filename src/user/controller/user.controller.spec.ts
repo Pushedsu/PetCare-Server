@@ -77,7 +77,7 @@ describe('UserController', () => {
         },
       };
 
-      expect(controller.getCurrentUser(mockUser as any)).toEqual(
+      expect(controller.getCurrentUser(mockUser as User)).toEqual(
         mockUser.readOnlyData,
       );
     });
