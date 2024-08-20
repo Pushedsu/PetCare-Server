@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PostsCreateDto } from '../dto/posts.create.dto';
 import { PostsRepository } from '../posts.repository';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class PostsService {
@@ -29,5 +30,9 @@ export class PostsService {
 
   async searchTitle(text: string) {
     return await this.postsRepository.searchTitle(text);
+  }
+
+  async deletePost(postId: Types.ObjectId) {
+    return await this.postsRepository.deletePost(postId);
   }
 }

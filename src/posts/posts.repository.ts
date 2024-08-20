@@ -1,10 +1,12 @@
 import { InjectModel } from '@nestjs/mongoose';
 import { Posts } from './posts.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
+import { Report } from 'src/admin/admin.schema';
 
 export class PostsRepository {
   constructor(
     @InjectModel(Posts.name) private readonly postsModel: Model<Posts>,
+    @InjectModel(Report.name) private readonly reportsModel: Model<Report>,
   ) {}
   async posting(author: string, contents: string, title: string, name: string) {
     const newPost = new this.postsModel({
@@ -27,18 +29,24 @@ export class PostsRepository {
   }
 
   async getMyPosts(id: string) {
-    return this.postsModel.find({ author: id }).sort({ createdAt: -1 });
+    return await this.postsModel.find({ author: id }).sort({ createdAt: -1 });
   }
 
   async searchContents(text: string) {
-    return this.postsModel
+    return await this.postsModel
       .find({ contents: { $regex: text, $options: 'i' } })
       .sort({ createdAt: -1 });
   }
 
   async searchTitle(text: string) {
-    return this.postsModel
+    return await this.postsModel
       .find({ title: { $regex: text, $options: 'i' } })
       .sort({ createdAt: -1 });
+  }
+
+  async deletePost(id: Types.ObjectId) {
+    const post = await this.postsModel.findByIdAndDelete(id);
+    await this.reportsModel.deleteMany({ postId: id });
+    return post;
   }
 }

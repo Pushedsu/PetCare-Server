@@ -13,6 +13,7 @@ import { HttpExceptionFilter } from '../../common/exceptions/http-exceptions.fil
 import { SuccessInterceptor } from '../../common/interceptors/success.interceptor';
 import { PostsCreateDto } from '../dto/posts.create.dto';
 import { PostsService } from '../service/posts.service';
+import { Types } from 'mongoose';
 
 @Controller('posts')
 @ApiTags('Post')
@@ -187,5 +188,10 @@ export class PostsController {
   async titleSearch(@Body() body) {
     const { text } = body;
     return await this.postsService.searchTitle(text);
+  }
+
+  @Post('deletePost')
+  async deletePost(@Body('postId') body: Types.ObjectId) {
+    return await this.postsService.deletePost(body);
   }
 }

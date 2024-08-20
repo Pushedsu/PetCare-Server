@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory, SchemaOptions } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsPositive } from 'class-validator';
 import { Document } from 'mongoose';
+import { Report } from 'src/admin/admin.schema';
 
 const options: SchemaOptions = {
   timestamps: true,
@@ -49,6 +50,19 @@ export class Posts extends Document {
   })
   @IsPositive()
   likeCount: number;
+
+  readonly reports: Report[];
 }
 
-export const PostsSchema = SchemaFactory.createForClass(Posts);
+export const _PostsSchema = SchemaFactory.createForClass(Posts);
+
+_PostsSchema.virtual('report', {
+  ref: 'report',
+  localField: '_id',
+  foreignField: 'postId',
+});
+
+_PostsSchema.set('toObject', { virtuals: true });
+_PostsSchema.set('toJSON', { virtuals: true });
+
+export const PostsSchema = _PostsSchema;
