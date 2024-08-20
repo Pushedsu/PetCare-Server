@@ -6,6 +6,8 @@ import { UserModule } from 'src/user/user.module';
 import { AuthService } from './auth.service';
 import { AccessTokenStrategy } from './jwt/jwt-accesstoken.strategy';
 import { RefreshTokenStrategy } from './jwt/jwt-refreshtoken.strategy';
+import { AuthController } from './auth.controller';
+import { GoogleStrategy } from './google/google.strategy';
 
 @Module({
   imports: [
@@ -18,7 +20,13 @@ import { RefreshTokenStrategy } from './jwt/jwt-refreshtoken.strategy';
     //모듈을 불러와 public으로 설정한 클래스들을 불러올 수 있다.
     forwardRef(() => UserModule),
   ],
-  providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
+  providers: [
+    AuthService,
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
+    GoogleStrategy,
+  ],
   exports: [AuthService],
+  controllers: [AuthController],
 })
 export class AuthModule {}

@@ -4,12 +4,32 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { Types } from 'mongoose';
 import { AuthLoginDto } from './dto/auth.login.dto';
+import { jwtDecode } from 'jwt-decode';
+import { UserService } from 'src/user/service/user.service';
+
+interface MyJwtPayload {
+  iss: string;
+  azp: string;
+  aud: string;
+  sub: string;
+  email: string;
+  email_verified: boolean; // 명시적으로 정의
+  at_hash: string;
+  nonce: string;
+  name: string;
+  picture: string;
+  given_name: string;
+  family_name: string;
+  iat: number;
+  exp: number;
+}
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
+    private readonly userService: UserService,
   ) {}
 
   async validateByRefreshToken(id: Types.ObjectId, token: string) {
@@ -41,6 +61,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('이메일이 존재하지 않습니다');
     }
+
     const checkPassword: boolean = await bcrypt.compare(
       password,
       user.password,
@@ -66,5 +87,43 @@ export class AuthService {
       }),
       refresh_token: refreshToken,
     };
+  }
+
+  async verifyToken(idToken: string) {
+    const decoded = jwtDecode(idToken) as MyJwtPayload;
+
+    const confirmUser = await this.userRepository.findUserByEmail(
+      decoded.email,
+    );
+
+    const signUpData = {
+      email: decoded.email,
+      name: decoded.given_name,
+      password: process.env.OAUTH_PASSWORD,
+    };
+    const loginData: AuthLoginDto = {
+      email: decoded.email,
+      password: process.env.OAUTH_PASSWORD,
+    };
+
+    if (!confirmUser) {
+      let confirmName = await this.userRepository.ExistsByName(
+        decoded.given_name,
+      );
+      while (confirmName) {
+        const randomNumber = Math.floor(Math.random() * 1000);
+        const rename = decoded.given_name + randomNumber;
+
+        confirmName = await this.userRepository.ExistsByName(rename);
+
+        if (!confirmName) {
+          signUpData.name = rename;
+        }
+      }
+
+      await this.userService.signUp(signUpData);
+    }
+
+    return this.login(loginData);
   }
 }
