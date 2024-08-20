@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { CacheModule, forwardRef, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserController } from './controller/user.controller';
@@ -11,10 +11,16 @@ import { AwsService } from 'src/aws/aws.service';
 import { MulterModule } from '@nestjs/platform-express/multer';
 import { memoryStorage } from 'multer';
 import { EmailService } from 'src/email/email.service';
+import * as redisStore from 'cache-manager-ioredis';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    CacheModule.register({
+      store: redisStore,
+      host: 'localhost',
+      port: 6379,
+    }),
     MulterModule.register({
       dest: './upload',
       storage: memoryStorage(),

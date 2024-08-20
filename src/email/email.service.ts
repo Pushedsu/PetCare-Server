@@ -25,4 +25,13 @@ export class EmailService {
       text: `임시 발급된 비밀번호는 ${tempPassword} 입니다. 빠른 기일 내로 변경해주시기 바랍니다.`, // 이메일 내용
     });
   }
+
+  async sendVerificationEmail(to: string, verificationCode: string) {
+    await this.transporter.sendMail({
+      to,
+      from: this.configService.get<string>('EMAIL_SENDER_ADDRESS'), // 발신자 이메일 주소
+      subject: '회원 가입을 위한 이메일 인증',
+      text: `회원 가입을 위한 이메일 인증 번호는 ${verificationCode} 입니다.`, // 이메일 내용
+    });
+  }
 }

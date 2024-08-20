@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserSignupDto } from '../dto/user.signup.dto';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from '../user.repository';
@@ -8,10 +13,12 @@ import { UserUpdateNameDto } from '../dto/user.updateName.dto';
 import { UserUpdatePasswordDto } from '../dto/user.updatePassword.dto';
 import { EmailService } from '../../email/email.service';
 import { UserFindPasswordDto } from '../dto/user.findPassword.dto';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class UserService {
   constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly userRepository: UserRepository,
     private readonly emailService: EmailService,
   ) {}
@@ -78,10 +85,16 @@ export class UserService {
 
     const isEmailExists = await this.userRepository.ExistsByEmail(email);
 
+    const isNameExists = await this.userRepository.ExistsByName(name);
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     if (isEmailExists) {
       throw new UnauthorizedException('입력한 이메일이 존재합니다. ');
+    }
+
+    if (isNameExists) {
+      throw new UnauthorizedException('입력한 이름이 존재합니다. ');
     }
 
     const user = await this.userRepository.create({
@@ -99,9 +112,9 @@ export class UserService {
     return await this.userRepository.updateImgUrl(id, url);
   }
 
-  async findPasswordById(body: UserFindPasswordDto) {
-    const { email, id } = body;
-    const user = await this.userRepository.findUserById(id);
+  async findPasswordByEmail(body: UserFindPasswordDto) {
+    const { email } = body;
+    const user = await this.userRepository.findUserByEmail(email);
 
     if (!user) {
       throw new UnauthorizedException('이메일이 존재하지 않습니다');
@@ -112,12 +125,8 @@ export class UserService {
     if (!checkEmail) {
       throw new UnauthorizedException('이메일이 일치하지 않습니다');
     }
-
-    //nodeEmailer나 aws email기능을 통해 입력받은 이메일에 임시 비밀번호를 전송하는 로직 구성
-
-    const charset =
-      process.env.CHARSET ||
-      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    process.env.OAUTH_PASSWORD;
+    const charset = process.env.CHARSET;
     let tempPassword = '';
 
     for (let i = 0; i < 12; i++) {
@@ -127,6 +136,33 @@ export class UserService {
 
     await this.emailService.sendEmail(email, tempPassword);
 
-    return await this.userRepository.updatePassword(id, tempPassword);
+    return await this.userRepository.updatePassword(user.id, tempPassword);
+  }
+
+  async sendVerificationCode(email: string) {
+    const isEmailExists = await this.userRepository.ExistsByEmail(email);
+
+    if (isEmailExists) {
+      throw new UnauthorizedException('입력한 이메일이 존재합니다. ');
+    }
+
+    const verificationCode = Math.floor(
+      100000 + Math.random() * 900000,
+    ).toString(); // 6자리 인증 코드 생성
+    await this.cacheManager.set(
+      `email-verification:${email}`,
+      verificationCode,
+      300,
+    ); // 5분 동안 유효
+    await this.emailService.sendVerificationEmail(email, verificationCode);
+    return { message: '인증 번호가 전송되었습니다.' };
+  }
+
+  async verifyEmail(body) {
+    const { email, code } = body;
+    const storedCode = await this.cacheManager.get<string>(
+      `email-verification:${email}`,
+    );
+    return storedCode == code;
   }
 }

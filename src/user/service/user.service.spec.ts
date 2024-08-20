@@ -326,7 +326,6 @@ describe('UserService', () => {
       //given
       const randomObjectId = new Types.ObjectId();
       const userFindPasswordData: UserFindPasswordDto = {
-        id: randomObjectId,
         email: 'test12@email.com',
       };
       const findUserByIdReturnValue = {
@@ -353,7 +352,9 @@ describe('UserService', () => {
       jest
         .spyOn(userRepository, 'updatePassword')
         .mockResolvedValue(updatePasswordReturnValue);
-      const result = await userService.findPasswordById(userFindPasswordData);
+      const result = await userService.findPasswordByEmail(
+        userFindPasswordData,
+      );
       //then
       expect(result).toEqual(updatePasswordReturnValue);
       expect(sendEmailSpy).toBeCalledWith(

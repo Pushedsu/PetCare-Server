@@ -239,7 +239,24 @@ export class UserController {
     description: 'server error...',
   })
   @Post('findPassword')
-  async findPasswordById(@Body() body: UserFindPasswordDto) {
-    return await this.userService.findPasswordById(body);
+  async findPasswordByEmail(@Body() body: UserFindPasswordDto) {
+    return await this.userService.findPasswordByEmail(body);
+  }
+
+  @ApiOperation({ summary: '인증 받을 이메일 주소 받기' })
+  @Post('sendVerification')
+  async sendVerification(@Body('email') email: string) {
+    return await this.userService.sendVerificationCode(email);
+  }
+
+  @ApiOperation({ summary: '인증 완료' })
+  @Post('verifyEmail')
+  async verifyEmail(@Body() body) {
+    const isValid = await this.userService.verifyEmail(body);
+    if (isValid) {
+      return { message: '인증에 성공했습니다.' };
+    } else {
+      return { message: '인증 번호가 유효하지 않습니다.' };
+    }
   }
 }

@@ -16,6 +16,11 @@ export class UserRepository {
     return exists ? true : false;
   }
 
+  async ExistsByName(name: string) {
+    const exists = await this.userModel.exists({ name });
+    return exists ? true : false;
+  }
+
   async findAll() {
     const allUserData = await this.userModel
       .find()
@@ -47,7 +52,7 @@ export class UserRepository {
 
   async findUserByIdAndDelete(id: Types.ObjectId) {
     const user = await this.userModel.findByIdAndDelete(id);
-    await this.postsModel.findOneAndDelete({ author: id });
+    await this.postsModel.deleteMany({ author: id });
     return user;
   }
 
