@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>게시글 신고 관리 페이지</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        margin-top: 20px;
+      }
+      .sidebar {
+        height: 100vh;
+        width: 200px;
+        position: fixed;
+        background: #333;
+        color: #fff;
+        padding: 20px;
+      }
+      .content {
+        margin-left: 220px;
+        padding: 20px;
+      }
+      a,
+      a:hover {
+        color: white;
+        text-decoration: none;
+      }
+      .table-responsive {
+        margin-top: 20px;
+      }
+      .modal-header,
+      .modal-footer {
+        border: none; /* 테두리 제거 */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <h4>Admin Panel</h4>
+      <ul class="nav flex-column">
+        <li class="nav-item"><a href="/admin/login">Logout</a></li>
+      </ul>
+    </div>
+    <div class="content">
+      <h1>신고글 관리 페이지</h1>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead class="thead-dark">
+            <tr>
+              <th>Post ID</th>
+              <th>작성자</th>
+              <th>신고 사유</th>
+              <th>신고 날짜</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="reportList"></tbody>
+        </table>
+      </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      $(document).ready(function () {
+        fetchReports();
+
+        function fetchReports() {
+          $.ajax({
+            url: '/admin/getAllReports', // 서버 엔드포인트
+            type: 'GET',
+            success: function (response) {
+              if (response.success && Array.isArray(response.data)) {
+                response.data.forEach(function (report) {
+                  $('#reportList').append(`
+                    <tr>
+                      <td>${report.postId}</td>
+                      <td>${report.reporterName}</td>
+                      <td>${report.reason}</td>
+                      <td>${new Date(report.createdAt)
+                        .toISOString()
+                        .slice(0, 10)}</td>
+                      <td>
+                        <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#viewPostModal"
+                            data-reportid="${report._id}"
+                            data-content="${report.contents}">
+                            View
+                        </button>
+                        <button class="btn btn-warning btn-sm" onclick="rejectReport('${
+                          report._id
+                        }')">
+                            반려
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deletePost('${
+                          report.postId
+                        }')">
+                          게시글 삭제
+                        </button>
+                      </td>
+                    </tr>
+                  `);
+                });
+              } else {
+                console.error(
+                  'Expected an array of reports, but got:',
+                  response,
+                );
+              }
+            },
+            error: function (xhr, status, error) {
+              console.error('Error fetching reports:', status, error);
+            },
+          });
+        }
+
+        window.rejectReport = function (reportId) {
+          $.ajax({
+            url: '/admin/deleteReport',
+            type: 'POST',
+            data: { reportId: reportId },
+            success: function (response) {
+              showCustomAlert('반려 완료', '반려가 완료되었습니다.');
+              $('#customAlertModal').on('hidden.bs.modal', function () {
+                location.reload(); // 페이지 새로 고침
+              });
+              $('#customAlertModal').modal('hide');
+            },
+            error: function (xhr, status, error) {
+              console.error('Error rejecting report:', status, error);
+            },
+          });
+        };
+
+        window.deletePost = function (postId) {
+          $.ajax({
+            url: '/posts/deletePost',
+            type: 'POST',
+            data: { postId: postId },
+            success: function (response) {
+              showCustomAlert('삭제 완료', '해당 게시글이 삭제되었습니다.');
+              $('#customAlertModal').on('hidden.bs.modal', function () {
+                location.reload(); // 페이지 새로 고침
+              });
+              $('#customAlertModal').modal('hide');
+            },
+            error: function (xhr, status, error) {
+              console.error('Error deleting post:', status, error);
+            },
+          });
+        };
+
+        function showCustomAlert(title, message) {
+          // 모달 제목과 본문 내용 업데이트
+          $('#customAlertModal .modal-title').text(title);
+          $('#customAlertModal .modal-body').text(message);
+          // 모달 표시
+          $('#customAlertModal').modal('show');
+        }
+
+        $('#viewPostModal').on('show.bs.modal', function (event) {
+          var button = $(event.relatedTarget);
+          var reportId = button.data('reportid');
+          var content = button.data('content');
+
+          var modal = $(this);
+          modal.find('#postContent').text(content);
+        });
+      });
+    </script>
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="viewPostModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="viewPostModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="viewPostModalLabel">게시글</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>
+              <strong>본문:</strong>
+              <span id="postContent">Loading...</span>
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Alert Modal -->
+    <div
+      class="modal fade"
+      id="customAlertModal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="customAlertModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="customAlertModalLabel">알림</h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- 알림 메시지가 여기에 표시됩니다 -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">
+              확인
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { PostModule } from './posts/posts.module';
 import { AwsModule } from './aws/aws.module';
 import { EmailModule } from './email/email.module';
+import { AdminModule } from './admin/admin.module';
 import mongoose from 'mongoose';
 
 @Module({
@@ -21,6 +22,7 @@ import mongoose from 'mongoose';
     PostModule,
     AwsModule,
     EmailModule,
+    AdminModule,
   ],
 })
 export class AppModule implements NestModule {
