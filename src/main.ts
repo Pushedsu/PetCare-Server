@@ -4,11 +4,15 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as expressBasicAuth from 'express-basic-auth';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/exceptions/http-exceptions.filter';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.setViewEngine('ejs');
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
 
   app.use(
     ['/api', '/api-json'],
@@ -36,6 +40,7 @@ async function bootstrap() {
       'token',
     )
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: { defaultModelsExpandDepth: -1 },
