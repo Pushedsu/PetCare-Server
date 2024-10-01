@@ -140,12 +140,6 @@ export class UserService {
   }
 
   async sendVerificationCode(email: string) {
-    const isEmailExists = await this.userRepository.ExistsByEmail(email);
-
-    if (isEmailExists) {
-      throw new UnauthorizedException('입력한 이메일이 존재합니다. ');
-    }
-
     const verificationCode = Math.floor(
       100000 + Math.random() * 900000,
     ).toString(); // 6자리 인증 코드 생성
