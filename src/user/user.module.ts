@@ -18,8 +18,11 @@ import * as redisStore from 'cache-manager-ioredis';
     ConfigModule.forRoot(),
     CacheModule.register({
       store: redisStore,
-      host: 'localhost',
-      port: 6379,
+      host: process.env.REDISHOST, // Redis Cloud의 Public Endpoint
+      port: process.env.REDISPORT, // Redis Cloud의 포트 (일반적으로 6379 또는 다른 포트)
+      password: process.env.REDISPW, // Redis Cloud의 비밀번호
+      username: process.env.REDISUSERNAME,
+      ttl: 300, // 캐시의 기본 TTL (300초 = 5분)
     }),
     MulterModule.register({
       dest: './upload',
