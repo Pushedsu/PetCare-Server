@@ -1,19 +1,39 @@
-import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
-import { NextFunction, Request, Response } from 'express';
+import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
+import { Request, Response, NextFunction } from 'express';
+import { Logger } from 'winston';
 
-//req,res 로그 미들웨어! ip와 req 메소드, 응답 상태코드를 터미널에 로깅하는 미들웨어!
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-  private logger = new Logger('HTTP');
+  constructor(@Inject('winston') private readonly logger: Logger) {}
 
   use(req: Request, res: Response, next: NextFunction) {
     res.on('finish', () => {
-      this.logger.log(
-        `${req.ip} ${req.method} ${res.statusCode}`,
-        req.originalUrl,
-      );
+      if (res.statusCode >= 500) {
+        this.logger.error(
+          `${req.method} ${req.originalUrl} ${res.statusCode}`,
+          {
+            ip: req.ip,
+            method: req.method,
+            url: req.originalUrl,
+            statusCode: res.statusCode,
+          },
+        );
+      } else if (res.statusCode >= 400) {
+        this.logger.warn(`${req.method} ${req.originalUrl} ${res.statusCode}`, {
+          ip: req.ip,
+          method: req.method,
+          url: req.originalUrl,
+          statusCode: res.statusCode,
+        });
+      } else {
+        this.logger.info(`${req.method} ${req.originalUrl} ${res.statusCode}`, {
+          ip: req.ip,
+          method: req.method,
+          url: req.originalUrl,
+          statusCode: res.statusCode,
+        });
+      }
     });
-
     next();
   }
 }
