@@ -190,6 +190,33 @@ export class PostsController {
     return await this.postsService.searchTitle(text);
   }
 
+  @ApiOperation({ summary: '게시글 삭제 기능' })
+  @ApiResponse({
+    status: 500,
+    description: 'Server error...',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'data: { 유저 정보 } ',
+    schema: {
+      example: {
+        success: true,
+        data: [
+          {
+            _id: '63ef371b...',
+            author: '63eef...',
+            contents: '본문...',
+            name: 'minsu',
+            title: '제목...',
+            likeCount: 10,
+            createdAt: '2023-02-17T08:13...',
+            updatedAt: '2023-02-17T14:00...',
+            __v: 0,
+          },
+        ],
+      },
+    },
+  })
   @Post('deletePost')
   async deletePost(@Body('postId') body: Types.ObjectId) {
     return await this.postsService.deletePost(body);
