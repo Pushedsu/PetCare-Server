@@ -13,6 +13,7 @@ import { WINSTON_MODULE_PROVIDER, WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
 import { Logger } from 'winston';
 import { MemoryUsageMiddleware } from './common/middlewares/memoryUsage.middleware';
+import DailyRotateFile from 'winston-daily-rotate-file'; // 모듈 추가
 
 // 날짜 형식을 'yyyy-MM-dd HH:mm:ss'로 변환하는 함수 (재사용)
 function formatDateToKST() {
@@ -36,16 +37,20 @@ function formatDateToKST() {
     }),
     WinstonModule.forRoot({
       transports: [
-        new winston.transports.Console({
-          format: winston.format.combine(
-            winston.format.timestamp({
-              format: formatDateToKST,
-            }),
-            winston.format.printf(({ level, message, timestamp }) => {
-              return `${timestamp} [${level}]: ${message}`;
-            }),
-          ),
-        }),
+        ...(process.env.MODE !== 'prod'
+          ? [
+              new winston.transports.Console({
+                format: winston.format.combine(
+                  winston.format.timestamp({
+                    format: formatDateToKST,
+                  }),
+                  winston.format.printf(({ level, message, timestamp }) => {
+                    return `${timestamp} [${level}]: ${message}`;
+                  }),
+                ),
+              }),
+            ]
+          : []),
         new winston.transports.File({
           filename: 'logs/error.log',
           level: 'error',
@@ -64,6 +69,21 @@ function formatDateToKST() {
               format: formatDateToKST,
             }),
             winston.format.json(),
+          ),
+        }),
+        new DailyRotateFile({
+          filename: 'logs/application-%DATE%.log',
+          datePattern: 'YYYY-MM-DD', // 매일 파일 회전
+          zippedArchive: true, // 압축 여부
+          maxSize: '20m', // 파일 최대 크기
+          maxFiles: '14d', // 14일간 보관
+          format: winston.format.combine(
+            winston.format.timestamp({
+              format: formatDateToKST,
+            }),
+            winston.format.printf(({ level, message, timestamp }) => {
+              return `${timestamp} [${level}]: ${message}`;
+            }),
           ),
         }),
       ],
